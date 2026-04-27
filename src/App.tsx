@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, MapPin, Phone, Mail, ArrowRight, Star, ShieldAlert, TrendingUp, Clock } from 'lucide-react';
+import { Menu, X, MapPin, Phone, Mail, ArrowRight, Star, ShieldAlert, TrendingUp, Clock, Zap } from 'lucide-react';
 import Calculator from './components/Calculator';
 import BCVCalculator from './components/BCVCalculator';
 import BRLtoUSDCalculator from './components/BRLtoUSDCalculator';
@@ -8,6 +8,7 @@ import ManualCalculator from './components/ManualCalculator';
 import RemittanceCalculator from './components/RemittanceCalculator';
 import RemittanceShareCard from './components/RemittanceShareCard';
 import DailyReport from './components/DailyReport';
+import FastConversionTable from './components/FastConversionTable';
 import Features from './components/Features';
 import Services from './components/Services';
 import FAQ from './components/FAQ';
@@ -33,12 +34,13 @@ export default function App() {
   
   // Mapping paths to views for backward compatibility where needed, 
   // but we'll mostly use the router now.
-  const getActiveView = () => {
+  const getActiveView = (): 'home' | 'scams' | 'admin' | 'brl-to-usd' | 'si-mando' | 'fast-conversions' | 'brl-to-usd' | 'bcv-calculator' | 'daily-report' | 'brazil-rates' => {
     const path = location.pathname;
     if (path === '/') return 'home';
     if (path === '/tasas-del-dia') return 'daily-report';
     if (path === '/tasas-brasil') return 'brazil-rates';
     if (path === '/si-mando') return 'si-mando';
+    if (path === '/conversiones-rapidas') return 'fast-conversions';
     if (path === '/calculadora-dolar') return 'brl-to-usd';
     if (path === '/calculadora-bcv') return 'bcv-calculator';
     if (path === '/directorio-estafas') return 'scams';
@@ -174,12 +176,13 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const navigateTo = (view: 'home' | 'scams' | 'admin' | 'brl-to-usd' | 'si-mando' | 'bcv-calculator' | 'daily-report' | 'brazil-rates') => {
-    const viewToPath = {
+  const navigateTo = (view: 'home' | 'scams' | 'admin' | 'brl-to-usd' | 'si-mando' | 'bcv-calculator' | 'daily-report' | 'brazil-rates' | 'fast-conversions') => {
+    const viewToPath: Record<string, string> = {
       'home': '/',
       'daily-report': '/tasas-del-dia',
       'brazil-rates': '/tasas-brasil',
       'si-mando': '/si-mando',
+      'fast-conversions': '/conversiones-rapidas',
       'brl-to-usd': '/calculadora-dolar',
       'bcv-calculator': '/calculadora-bcv',
       'scams': '/directorio-estafas',
@@ -301,11 +304,12 @@ export default function App() {
               {/* Desktop Menu */}
               <div className="hidden md:flex items-center space-x-8">
                 <button onClick={() => navigateTo('home')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300'}`}>Inicio</button>
-                <button onClick={() => navigateTo('daily-report')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'daily-report' ? 'text-brand-green' : 'text-slate-600') : (currentView === 'daily-report' ? 'text-brand-green' : 'text-slate-300')}`}>Tasas del día</button>
-                <button onClick={() => navigateTo('brazil-rates')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'brazil-rates' ? 'text-brand-green' : 'text-slate-600') : (currentView === 'brazil-rates' ? 'text-brand-green' : 'text-slate-300')}`}>Tasas Brasil</button>
-                <button onClick={() => navigateTo('si-mando')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'si-mando' ? 'text-brand-green' : 'text-slate-600') : (currentView === 'si-mando' ? 'text-brand-green' : 'text-slate-300')}`}>Si mando, ¿cuánto llega?</button>
-                <button onClick={() => navigateTo('brl-to-usd')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'brl-to-usd' ? 'text-brand-green' : 'text-slate-600') : (currentView === 'brl-to-usd' ? 'text-brand-green' : 'text-slate-300')}`}>Calculadora Real a Dólar</button>
-                <button onClick={() => navigateTo('bcv-calculator')} className={`font-medium hover:text-brand-green transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'bcv-calculator' ? 'text-brand-green' : 'text-slate-600') : (currentView === 'bcv-calculator' ? 'text-brand-green' : 'text-slate-300')}`}>Calculadora BCV</button>
+                <button onClick={() => navigateTo('daily-report')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'daily-report' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Tasas del día</button>
+                <button onClick={() => navigateTo('brazil-rates')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'brazil-rates' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Tasas Brasil</button>
+                <button onClick={() => navigateTo('fast-conversions')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'fast-conversions' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Tablas Rápidas</button>
+                <button onClick={() => navigateTo('si-mando')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'si-mando' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Si mando, ¿cuánto llega?</button>
+                <button onClick={() => navigateTo('brl-to-usd')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'brl-to-usd' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Calculadora Real a Dólar</button>
+                <button onClick={() => navigateTo('bcv-calculator')} className={`font-medium hover:text-brand-green transition-colors ${currentView === 'bcv-calculator' ? 'text-brand-green' : (isScrolled || currentView !== 'home' ? 'text-slate-600' : 'text-slate-300')}`}>Calculadora BCV</button>
                 <button onClick={() => navigateTo('scams')} className={`font-medium flex items-center gap-1 hover:text-red-500 transition-colors ${isScrolled || currentView !== 'home' ? (currentView === 'scams' ? 'text-red-600' : 'text-slate-600') : 'text-slate-300'}`}>
                   <ShieldAlert size={18} /> Directorio Estafas
                 </button>
@@ -405,6 +409,9 @@ export default function App() {
               <button onClick={() => navigateTo('home')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Inicio</button>
               <button onClick={() => navigateTo('daily-report')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Tasas del día</button>
               <button onClick={() => navigateTo('brazil-rates')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Tasas Brasil</button>
+              <button onClick={() => navigateTo('fast-conversions')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50 flex items-center justify-center gap-2">
+                <Zap size={18} className="text-brand-green" /> Tablas Rápidas
+              </button>
               <button onClick={() => navigateTo('si-mando')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Si mando, ¿cuánto llega?</button>
               <button onClick={() => navigateTo('brl-to-usd')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Calculadora Real a Dólar</button>
               <button onClick={() => navigateTo('bcv-calculator')} className="py-2 text-lg font-bold text-brand-blue border-b border-slate-50">Calculadora BCV</button>
@@ -477,6 +484,9 @@ export default function App() {
                         </button>
                         <button onClick={() => navigateTo('daily-report')} className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-5 py-3 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 backdrop-blur-sm hover:-translate-y-0.5">
                           Tasas del día <TrendingUp size={18} />
+                        </button>
+                        <button onClick={() => navigateTo('fast-conversions')} className="bg-brand-green/10 hover:bg-brand-green/20 text-brand-green border border-brand-green/30 px-5 py-3 rounded-xl font-bold text-base transition-all flex items-center justify-center gap-2 backdrop-blur-sm hover:-translate-y-0.5">
+                          Tablas Rápidas <Zap size={18} />
                         </button>
                       </div>
                     </div>
@@ -809,6 +819,13 @@ export default function App() {
                 </div>
               </div>
             </div>
+          } />
+
+          <Route path="/conversiones-rapidas" element={
+            <FastConversionTable 
+              rates={rates} 
+              bcvRate={parseFloat(bcvRate.replace(',', '.')) || 36.29} 
+            />
           } />
 
           <Route path="/directorio-estafas" element={

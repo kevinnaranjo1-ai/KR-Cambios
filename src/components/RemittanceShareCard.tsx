@@ -53,7 +53,7 @@ export default function RemittanceShareCard({ reais, ves, usd, brlVesRate, bcvRa
         await navigator.share({
           files: [file],
           title: 'Cotización de Remesa - KR Cambios',
-          text: `Si mandas R$ ${reais}, reciben Bs. ${ves.toLocaleString('de-DE')}. ¡Cotiza con nosotros!`,
+          text: `Si mandas R$ ${reais}, reciben Bs. ${ves.toLocaleString('de-DE')}. ¡Envia con nosotros!`,
         });
       } else {
         handleDownload();
